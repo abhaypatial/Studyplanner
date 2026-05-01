@@ -20,19 +20,29 @@ async def list_models(api_key: str | None) -> list[str]:
     return gemini_models or FALLBACK_MODELS
 
 
-async def chat(api_key: str, model: str, message: str, module_title: str | None = None) -> str:
+async def chat(api_key: str, model: str, messages: list[dict], module_title: str | None = None) -> str:
     if not api_key.strip():
         raise ValueError("Gemini API key is required.")
 
     selected_model = model.strip() or FALLBACK_MODELS[0]
     context = f"The learner is currently studying: {module_title}." if module_title else ""
-    prompt = (
+    
+    gemini_contents = []
+    for msg in messages:
+        role = "user" if msg["role"] == "learner" else "model"
+        gemini_contents.append({"role": role, "parts": [{"text": msg["text"]}]})
+
+    system_instruction = (
         "You are a Socratic AI/data science tutor. Ask guiding questions, give concise hints, "
         "and avoid dumping a full solution unless the learner explicitly asks. "
-        f"{context}\n\nLearner: {message}"
+        f"{context}"
     )
+
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{selected_model}:generateContent"
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    payload = {
+        "systemInstruction": {"parts": [{"text": system_instruction}]},
+        "contents": gemini_contents
+    }
 
     async with httpx.AsyncClient(timeout=20) as client:
         response = await client.post(url, headers={"x-goog-api-key": api_key}, json=payload)

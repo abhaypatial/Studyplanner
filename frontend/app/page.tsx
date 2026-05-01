@@ -124,22 +124,29 @@ export default function Home() {
     if (!message) return;
     setChatError("");
     setChatInput("");
-    setChatMessages((current) => [...current, { role: "learner", text: message }]);
+    const newMessages: ChatMessage[] = [...chatMessages, { role: "learner", text: message }];
+    setChatMessages(newMessages);
 
     if (!apiKey) {
       setChatError("Add your Gemini API key in Tutor Settings first.");
       return;
     }
 
+    setChatMessages((current) => [...current, { role: "tutor", text: "..." }]);
+
     try {
       const result = await askTutor({
         api_key: apiKey,
         model,
-        message,
+        messages: newMessages,
         module_title: activeModule?.title,
       });
-      setChatMessages((current) => [...current, { role: "tutor", text: result.reply }]);
+      setChatMessages((current) => {
+        const withoutTyping = current.slice(0, -1);
+        return [...withoutTyping, { role: "tutor", text: result.reply }];
+      });
     } catch (error) {
+      setChatMessages((current) => current.slice(0, -1));
       setChatError(error instanceof Error ? error.message : "Tutor request failed.");
     }
   }

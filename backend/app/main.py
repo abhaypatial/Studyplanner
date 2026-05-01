@@ -53,10 +53,15 @@ class ProgressRequest(BaseModel):
     status: str = Field(pattern="^(pending|active|done)$")
 
 
+class ChatMessage(BaseModel):
+    role: str = Field(pattern="^(learner|tutor)$")
+    text: str = Field(min_length=1, max_length=4000)
+
+
 class TutorRequest(BaseModel):
     api_key: str
     model: str = "gemini-2.5-flash"
-    message: str = Field(min_length=1, max_length=4000)
+    messages: list[ChatMessage] = Field(min_length=1)
     module_title: str | None = None
 
 
@@ -220,7 +225,8 @@ async def gemini_models(api_key: str | None = None) -> dict:
 @app.post("/api/gemini/chat")
 async def gemini_chat(payload: TutorRequest) -> dict:
     try:
-        reply = await chat(payload.api_key, payload.model, payload.message, payload.module_title)
+        messages_dicts = [{"role": m.role, "text": m.text} for m in payload.messages]
+        reply = await chat(payload.api_key, payload.model, messages_dicts, payload.module_title)
     except httpx.HTTPStatusError as exc:
         raise HTTPException(status_code=400, detail=f"Gemini request failed: {exc.response.text}") from exc
     except ValueError as exc:

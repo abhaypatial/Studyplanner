@@ -51,7 +51,7 @@ export async function fetchGeminiModels(apiKey: string) {
   return response.json();
 }
 
-export async function askTutor(payload: { api_key: string; model: string; message: string; module_title?: string }) {
+export async function askTutor(payload: { api_key: string; model: string; messages: {role: string, text: string}[]; module_title?: string }) {
   const response = await fetch(`${API_BASE}/api/gemini/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
