@@ -44,6 +44,6 @@ def test_progress_endpoint_returns_materials_after_update():
 
     assert update_response.status_code == 200
     assert progress_response.status_code == 200
-    first_module = progress_response.json()[0]
+    first_module = progress_response.json()["schedule"][0]
     assert first_module["status"] == "done"
     assert "materials" in first_module

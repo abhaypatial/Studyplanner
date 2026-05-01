@@ -24,8 +24,8 @@ app = FastAPI(title="AI Study Planner API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -65,7 +65,25 @@ class TutorRequest(BaseModel):
     module_title: str | None = None
 
 
-def attach_materials(conn, modules: list[dict]) -> list[dict]:
+class MaterialProgressRequest(BaseModel):
+    user_id: int
+    material_id: int
+    completed: bool
+
+
+class AddXpRequest(BaseModel):
+    user_id: int
+    amount: int
+
+
+class QuizRequest(BaseModel):
+    api_key: str
+    model: str = "gemini-2.5-flash"
+    title: str
+    summary: str
+
+
+def attach_materials(conn, modules: list[dict], user_id: int | None = None) -> list[dict]:
     if not modules:
         return modules
     module_ids = [module["id"] if "id" in module else module["module_id"] for module in modules]
@@ -74,9 +92,17 @@ def attach_materials(conn, modules: list[dict]) -> list[dict]:
         f"SELECT * FROM materials WHERE module_id IN ({placeholders}) ORDER BY id",
         module_ids,
     ).fetchall()
+    
+    completed_mats = set()
+    if user_id is not None:
+        mat_rows = conn.execute("SELECT material_id FROM material_progress WHERE user_id = ?", (user_id,)).fetchall()
+        completed_mats = {r["material_id"] for r in mat_rows}
+        
     materials_by_module: dict[int, list[dict]] = {}
     for row in rows_to_dicts(rows):
-        materials_by_module.setdefault(row["module_id"], []).append(row)
+        row_dict = dict(row)
+        row_dict["is_completed"] = row_dict["id"] in completed_mats
+        materials_by_module.setdefault(row_dict["module_id"], []).append(row_dict)
     for module in modules:
         module_id = module["id"] if "id" in module else module["module_id"]
         module["materials"] = materials_by_module.get(module_id, [])
@@ -166,13 +192,16 @@ def generate_plan(payload: OnboardingRequest) -> dict:
             }
         )
 
-    return {"user_id": user_id, "weekly_hours": schedule[0].weekly_hours if schedule else 0, "schedule": response_schedule}
+    return {"user_id": user_id, "weekly_hours": schedule[0].weekly_hours if schedule else 0, "schedule": response_schedule, "xp": 0, "streak_days": 0}
 
 
 @app.get("/api/progress/{user_id}")
-def get_progress(user_id: int) -> list[dict]:
+def get_progress(user_id: int) -> dict:
     initialize_database()
     with connect() as conn:
+        user = conn.execute("SELECT xp, streak_days FROM users WHERE id = ?", (user_id,)).fetchone()
+        if not user:
+            raise HTTPException(404, "User not found")
         rows = conn.execute(
             """
             SELECT p.*, m.title, m.priority, m.est_hours, m.summary
@@ -184,7 +213,11 @@ def get_progress(user_id: int) -> list[dict]:
             (user_id,),
         ).fetchall()
         progress_rows = rows_to_dicts(rows)
-        return attach_materials(conn, progress_rows)
+        return {
+            "xp": user["xp"],
+            "streak_days": user["streak_days"],
+            "schedule": attach_materials(conn, progress_rows, user_id)
+        }
 
 
 @app.post("/api/progress")
@@ -197,6 +230,26 @@ def update_progress(payload: ProgressRequest) -> dict:
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Progress record not found.")
+            
+        if payload.status == "done":
+            user = conn.execute("SELECT last_active_date, streak_days FROM users WHERE id = ?", (payload.user_id,)).fetchone()
+            if user:
+                streak_days = user["streak_days"]
+                today = date.today().isoformat()
+                if user["last_active_date"]:
+                    last_active = date.fromisoformat(user["last_active_date"])
+                    delta = (date.today() - last_active).days
+                    if delta == 1:
+                        streak_days += 1
+                    elif delta > 1:
+                        streak_days = 1
+                else:
+                    streak_days = 1
+                conn.execute(
+                    "UPDATE users SET xp = xp + 50, streak_days = ?, last_active_date = ? WHERE id = ?",
+                    (streak_days, today, payload.user_id)
+                )
+
     return {"ok": True}
 
 
@@ -204,6 +257,23 @@ def update_progress(payload: ProgressRequest) -> dict:
 def reset_progress(user_id: int) -> dict:
     with connect() as conn:
         conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    return {"ok": True}
+
+
+@app.post("/api/material-progress")
+def update_material_progress(payload: MaterialProgressRequest) -> dict:
+    with connect() as conn:
+        if payload.completed:
+            conn.execute("INSERT OR IGNORE INTO material_progress (user_id, material_id) VALUES (?, ?)", (payload.user_id, payload.material_id))
+        else:
+            conn.execute("DELETE FROM material_progress WHERE user_id = ? AND material_id = ?", (payload.user_id, payload.material_id))
+    return {"ok": True}
+
+
+@app.post("/api/user/xp")
+def add_xp(payload: AddXpRequest) -> dict:
+    with connect() as conn:
+        conn.execute("UPDATE users SET xp = xp + ? WHERE id = ?", (payload.amount, payload.user_id))
     return {"ok": True}
 
 
@@ -232,3 +302,13 @@ async def gemini_chat(payload: TutorRequest) -> dict:
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"reply": reply}
+
+
+@app.post("/api/gemini/quiz")
+async def get_quiz(payload: QuizRequest) -> dict:
+    from .gemini import generate_quiz
+    try:
+        quiz = await generate_quiz(payload.api_key, payload.model, payload.title, payload.summary)
+        return quiz
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))

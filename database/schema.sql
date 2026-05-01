@@ -4,7 +4,10 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   chosen_path TEXT NOT NULL,
   target_months INTEGER NOT NULL CHECK (target_months BETWEEN 1 AND 6),
-  start_date TEXT NOT NULL DEFAULT (date('now'))
+  start_date TEXT NOT NULL DEFAULT (date('now')),
+  xp INTEGER NOT NULL DEFAULT 0,
+  streak_days INTEGER NOT NULL DEFAULT 0,
+  last_active_date TEXT
 );
 
 CREATE TABLE IF NOT EXISTS skills (
@@ -57,3 +60,12 @@ CREATE TABLE IF NOT EXISTS materials (
 
 CREATE INDEX IF NOT EXISTS idx_modules_path ON modules(path_id);
 CREATE INDEX IF NOT EXISTS idx_progress_user ON progress(user_id);
+
+CREATE TABLE IF NOT EXISTS material_progress (
+  user_id INTEGER NOT NULL,
+  material_id INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'done',
+  PRIMARY KEY (user_id, material_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
+);

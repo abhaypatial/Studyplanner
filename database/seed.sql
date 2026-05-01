@@ -10,7 +10,8 @@ INSERT OR IGNORE INTO modules (id, title, path_id, priority, is_common_core, est
   (9, 'Feature Engineering and Pipelines', 'ml_engineer', 'high', 0, 14, 'Reusable preprocessing, leakage control, and production data flows.'),
   (10, 'Deep Learning Foundations', 'ai_engineer', 'high', 0, 18, 'Neural networks, training loops, embeddings, and architectures.'),
   (11, 'LLM Applications and Evaluation', 'ai_engineer', 'high', 0, 14, 'Prompting, RAG, evaluation, safety, and deployment patterns.'),
-  (12, 'AI Systems Architecture', 'ai_architect', 'high', 0, 18, 'System design for AI products, governance, cost, reliability, and scaling.');
+  (12, 'AI Systems Architecture', 'ai_architect', 'high', 0, 18, 'System design for AI products, governance, cost, reliability, and scaling.'),
+  (13, 'Capstone Project & Portfolio', 'foundations', 'high', 1, 20, 'Build an end-to-end ML/Data application, deploy to the cloud, and write a portfolio case study.');
 
 INSERT OR IGNORE INTO prerequisites (module_id, requires_module_id) VALUES
   (3, 1),
@@ -24,18 +25,39 @@ INSERT OR IGNORE INTO prerequisites (module_id, requires_module_id) VALUES
   (10, 5),
   (11, 10),
   (12, 8),
-  (12, 11);
+  (12, 11),
+  (13, 8);
 
 INSERT OR IGNORE INTO materials (module_id, title, material_type, url) VALUES
-  (1, 'Python for Everybody', 'free_book', 'https://www.py4e.com/book'),
-  (1, 'Automate the Boring Stuff with Python', 'free_book', 'https://automatetheboringstuff.com/'),
-  (2, 'MIT Missing Semester: Version Control', 'video', 'https://missing.csail.mit.edu/2020/version-control/'),
-  (3, 'Mode SQL Tutorial', 'interactive', 'https://mode.com/sql-tutorial/'),
-  (3, 'SQLBolt', 'interactive', 'https://sqlbolt.com/'),
-  (4, 'MIT OCW Linear Algebra', 'video', 'https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/'),
-  (5, 'StatQuest Statistics Fundamentals', 'video', 'https://www.youtube.com/@statquest'),
-  (6, 'Data Visualization Curriculum', 'free_book', 'https://uwdata.github.io/visualization-curriculum/'),
-  (8, 'fast.ai Practical Deep Learning', 'course', 'https://course.fast.ai/'),
-  (10, 'Deep Learning Book', 'free_book', 'https://www.deeplearningbook.org/'),
-  (11, 'Hugging Face NLP Course', 'course', 'https://huggingface.co/learn/nlp-course/chapter1/1'),
-  (12, 'Google Machine Learning Crash Course', 'course', 'https://developers.google.com/machine-learning/crash-course');
+  (1, 'Python for Everybody (English)', 'free_book', 'https://www.py4e.com/book'),
+  (1, 'Kaggle Python Course (Fun Interactive)', 'interactive', 'https://www.kaggle.com/learn/python'),
+  (1, 'CodeWithHarry 100 Days of Code (Hindi)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLu0W_9lII9agwh1XjRt242xIpHhPT2llg'),
+  
+  (2, 'Learn Git Branching (Fun Interactive)', 'interactive', 'https://learngitbranching.js.org/'),
+  (2, 'CodeWithHarry Git & GitHub (Hindi)', 'video', 'https://www.youtube.com/watch?v=gwWKnnCMQ5c'),
+  
+  (3, 'SQLBolt (Fun Interactive)', 'interactive', 'https://sqlbolt.com/'),
+  (3, 'Select Star SQL (Interactive)', 'interactive', 'https://selectstarsql.com/'),
+  (3, 'Krish Naik SQL Playlist (Hindi)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLZoTAELRMXVPhVsq3qLeWS5csXxdRzaB3'),
+  
+  (4, '3Blue1Brown Essence of Linear Algebra (English)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab'),
+  
+  (5, 'StatQuest Statistics Fundamentals (English)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLblh5JKOoLUK0FLuzwntyYI10UQFUhsY9'),
+  (5, 'Krish Naik Statistics in ML (Hindi)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLZoTAELRMXVN5QNaIWEA1xFXfD50gIfL2'),
+  
+  (6, 'Data Visualization Curriculum (English)', 'free_book', 'https://uwdata.github.io/visualization-curriculum/'),
+  
+  (7, 'Kaggle Pandas Course (Interactive)', 'interactive', 'https://www.kaggle.com/learn/pandas'),
+  
+  (8, 'fast.ai Practical Deep Learning (English)', 'course', 'https://course.fast.ai/'),
+  (8, 'CampusX 100 Days of ML (Hindi)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLKnIA16_Rmvbr7zKYQuBfsVkjoLcU0Fvg'),
+  
+  (10, 'Andrej Karpathy Neural Networks: Zero to Hero (English)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ'),
+  (10, 'Krish Naik Deep Learning Playlist (Hindi)', 'video_playlist', 'https://www.youtube.com/playlist?list=PLZoTAELRMXVPGU70ZGsckrMdr0FteeRUi'),
+  
+  (11, 'Hugging Face NLP Course (English)', 'course', 'https://huggingface.co/learn/nlp-course/chapter1/1'),
+  
+  (12, 'Google Machine Learning Crash Course (English)', 'course', 'https://developers.google.com/machine-learning/crash-course'),
+  
+  (13, 'Hugging Face Spaces (Deployment Hosting)', 'deployment', 'https://huggingface.co/spaces'),
+  (13, 'Streamlit Python Dashboards', 'deployment', 'https://streamlit.io/');

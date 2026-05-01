@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import httpx
 
 
@@ -56,3 +57,33 @@ async def chat(api_key: str, model: str, messages: list[dict], module_title: str
     parts = candidates[0].get("content", {}).get("parts", [])
     text_parts = [part.get("text", "") for part in parts if part.get("text")]
     return "\n".join(text_parts).strip() or "I received an empty tutor response. Try again."
+
+
+async def generate_quiz(api_key: str, model: str, title: str, summary: str) -> dict:
+    if not api_key.strip():
+        raise ValueError("Gemini API key is required.")
+        
+    system = "You are a quiz generator. Generate a 3-question multiple choice quiz. Output ONLY valid JSON."
+    prompt = f"Module: {title}\nSummary: {summary}\nFormat: {{\"questions\": [{{\"q\": \"...\", \"options\": [\"A\", \"B\", \"C\"], \"answer\": \"A\"}}]}}"
+    
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model or FALLBACK_MODELS[0]}:generateContent"
+    payload = {
+        "systemInstruction": {"parts": [{"text": system}]},
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {"responseMimeType": "application/json"}
+    }
+    
+    async with httpx.AsyncClient(timeout=20) as client:
+        response = await client.post(url, headers={"x-goog-api-key": api_key}, json=payload)
+        response.raise_for_status()
+
+    data = response.json()
+    candidates = data.get("candidates", [])
+    if not candidates:
+        raise ValueError("No response from Gemini")
+        
+    text = candidates[0]["content"]["parts"][0].get("text", "{}")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        raise ValueError("Failed to parse quiz JSON from Gemini")

@@ -2,35 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: 210 40% 98%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --primary: 226 71% 40%;
-  --primary-foreground: 210 40% 98%;
-  --muted: 214 32% 91%;
-  --muted-foreground: 215 16% 47%;
-  --border: 214 32% 86%;
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 260 85% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 40% 95%;
+    --secondary-foreground: 260 85% 30%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
+    --border: 214 32% 86%;
+    --radius: 1rem;
+    --ring: 260 85% 65%;
+  }
+
+  .dark {
+    --background: 230 25% 6%;
+    --foreground: 210 40% 98%;
+    --card: 230 25% 10%;
+    --card-foreground: 210 40% 98%;
+    --primary: 260 90% 70%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 230 35% 15%;
+    --secondary-foreground: 260 90% 80%;
+    --muted: 230 25% 14%;
+    --muted-foreground: 215 20% 70%;
+    --border: 230 25% 16%;
+    --ring: 260 90% 70%;
+  }
 }
 
-.dark {
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
-  --card: 217 33% 17%;
-  --card-foreground: 210 40% 98%;
-  --primary: 226 85% 62%;
-  --primary-foreground: 222 47% 11%;
-  --muted: 217 33% 22%;
-  --muted-foreground: 215 20% 70%;
-  --border: 217 33% 28%;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(circle at top center, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                      radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
 }
 
-* {
-  border-color: hsl(var(--border));
-}
-
-body {
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
+@layer utilities {
+  .glass-effect {
+    @apply bg-background/60 backdrop-blur-xl border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)];
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-primary/40;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400;
+  }
 }

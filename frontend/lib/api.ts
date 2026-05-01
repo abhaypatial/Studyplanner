@@ -63,3 +63,33 @@ export async function askTutor(payload: { api_key: string; model: string; messag
   }
   return response.json();
 }
+
+export async function updateMaterialProgress(payload: { user_id: number; material_id: number; completed: boolean }) {
+  const response = await fetch(`${API_BASE}/api/material-progress`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error("Failed to update material progress");
+  return response.json();
+}
+
+export async function generateQuiz(payload: { api_key: string; model: string; title: string; summary: string }) {
+  const response = await fetch(`${API_BASE}/api/gemini/quiz`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error("Failed to generate quiz");
+  return response.json();
+}
+
+export async function addXp(payload: { user_id: number; amount: number }) {
+  const response = await fetch(`${API_BASE}/api/user/xp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error("Failed to add XP");
+  return response.json();
+}
