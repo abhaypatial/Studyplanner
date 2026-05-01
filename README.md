@@ -1,96 +1,83 @@
 # AI/Data Science Study Planner
 
-A local study planner for learning data analysis, data science, machine learning, and AI. It helps you choose a learning path, mark skills you already know, build a timeline, practice Python or SQL, and connect a Gemini API key for tutor features.
+**A beginner-friendly local app for planning and practicing AI, data science, machine learning, Python, and SQL.**
 
-This app runs on your own computer. You do not need to deploy it to the internet.
+This project runs on your own computer. You do not need to publish anything online, rent a server, or understand deployment to use it.
 
-## What You Need First
+## What This App Does
 
-Install these before running the project:
+- Builds a study plan for roles like Data Analyst, Data Scientist, ML Engineer, AI Engineer, and AI Architect.
+- Lets you mark skills you already know so the plan skips beginner work.
+- Creates a timeline based on your target completion window.
+- Gives you a local Python and SQL practice sandbox.
+- Lets you add a Google Gemini API key for tutor features.
+- Stores app data locally with SQLite.
 
-- **Git**: downloads the project from GitHub.
-- **Node.js LTS**: runs the website part of the app.
-- **Python 3.13 or newer**: runs the backend and code exercises.
+## Project Links
 
-Download links:
+- GitHub repo: https://github.com/abhaypatial/Studyplanner
+- Gemini API key page: https://aistudio.google.com/app/apikey
 
-- Git: https://git-scm.com/downloads
-- Node.js LTS: https://nodejs.org/
-- Python: https://www.python.org/downloads/
+## Before You Start
 
-When installing Python on Windows, check the box that says **Add Python to PATH**.
+You need three free tools installed:
+
+| Tool | Why You Need It | Download |
+| --- | --- | --- |
+| Git | Downloads the project from GitHub | https://git-scm.com/downloads |
+| Node.js LTS | Runs the website | https://nodejs.org/ |
+| Python 3.13 or newer | Runs the backend and practice runner | https://www.python.org/downloads/ |
+
+Important Windows note: when installing Python, check **Add Python to PATH**.
 
 ## Download The App
 
 ### Windows
 
-1. Open **Command Prompt** or **PowerShell**.
-2. Go to the folder where you want the app:
+Open **PowerShell** or **Command Prompt**, then run:
 
 ```bat
 cd Downloads
-```
-
-3. Download the project:
-
-```bat
 git clone https://github.com/abhaypatial/Studyplanner.git
-```
-
-4. Open the project folder:
-
-```bat
 cd Studyplanner
 ```
 
 ### macOS
 
-1. Open **Terminal**.
-2. Go to the folder where you want the app:
+Open **Terminal**, then run:
 
 ```bash
 cd ~/Downloads
-```
-
-3. Download the project:
-
-```bash
 git clone https://github.com/abhaypatial/Studyplanner.git
-```
-
-4. Open the project folder:
-
-```bash
 cd Studyplanner
 ```
 
 ## First-Time Setup
 
-### Windows Setup
+Run this only once after downloading the app.
 
-Run:
+### Windows
 
 ```bat
 scripts\setup-windows.bat
 ```
 
-This installs the backend and frontend dependencies.
-
-### macOS Setup
-
-Run:
+### macOS
 
 ```bash
 bash scripts/setup-mac.sh
 ```
 
-This installs the backend and frontend dependencies. The macOS script uses Homebrew. If you do not have Homebrew yet, install it from https://brew.sh/.
+The setup script installs the project dependencies. On macOS, it expects Homebrew. If you do not have Homebrew, install it from https://brew.sh/ and run the setup again.
 
 ## How To Run The App
 
-You need two terminal windows: one for the backend and one for the website.
+You need **two terminal windows**:
 
-### 1. Start The Backend
+- Terminal 1: backend
+- Terminal 2: website
+
+### Terminal 1: Start The Backend
 
 Windows:
 
@@ -108,117 +95,225 @@ source .venv/bin/activate
 uvicorn app.main:app --reload --port 8000
 ```
 
-Leave this window open. The backend should run at:
+Keep this terminal open.
+
+Backend address:
 
 ```text
 http://localhost:8000
 ```
 
-### 2. Start The Website
+### Terminal 2: Start The Website
 
-Open a second terminal window.
-
-Windows or macOS:
+Open a second terminal in the project folder, then run:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Leave this window open too. The website should run at:
+Keep this terminal open too.
+
+Website address:
 
 ```text
 http://localhost:3000
 ```
 
-Open that address in your browser.
+Open `http://localhost:3000` in your browser.
 
 ## How To Use The App
 
-1. Choose your role, such as **Data Analyst**, **Data Scientist**, **ML Engineer**, **AI Engineer**, or **AI Architect**.
+1. Choose your goal role.
 2. Check the skills you already know.
-3. Pick your target timeline from 1 to 6 months.
+3. Pick a timeline from 1 to 6 months.
 4. Click **Generate Plan**.
-5. Use the dashboard to see what to study next.
+5. Follow the dashboard.
 6. Use the sandbox to practice Python or SQL.
 
 ## How To Add A Gemini API Key
 
-The Gemini key is optional. The app still runs without it, but tutor features need it.
+The Gemini API key is optional. The app can run without it, but tutor features need it.
 
-1. Get a Gemini API key from Google AI Studio:
+1. Go to Google AI Studio:
 
 ```text
 https://aistudio.google.com/app/apikey
 ```
 
-2. Start the backend and website.
-3. Open the website:
+2. Create or copy your API key.
+3. Start the backend and website.
+4. Open:
 
 ```text
 http://localhost:3000
 ```
 
-4. Click **Tutor Settings**.
-5. Paste your Gemini API key into the password field.
-6. Click **Fetch Models**.
-7. If the key works, you should see available Gemini models.
+5. Click **Tutor Settings**.
+6. Paste your key into the password field.
+7. Click **Fetch Models**.
 
-Keep your API key private. Do not post it on GitHub, Discord, email, or screenshots.
+If the key works, you will see Gemini models listed.
 
-## Common Issues
+Keep your API key private. Do not upload it to GitHub or share it in screenshots.
 
-### `git` is not recognized
+## PATH Problems And Fixes
 
-Git is not installed, or your terminal cannot find it.
+PATH is the list of places your computer checks when you type commands like `git`, `python`, `node`, or `npm`.
 
-Fix:
+If you see errors like these, it usually means the tool is not installed or its PATH is not set:
 
-1. Install Git from https://git-scm.com/downloads.
-2. Close and reopen your terminal.
-3. Try the command again.
+- `'git' is not recognized`
+- `'python' is not recognized`
+- `'node' is not recognized`
+- `'npm' is not recognized`
+- `command not found: git`
+- `command not found: python`
+- `command not found: npm`
 
-### `python` is not recognized
+### Check What Is Working
 
-Python is not installed, or it was installed without PATH support.
+Run these commands:
 
-Fix on Windows:
+```bash
+git --version
+node --version
+npm --version
+python --version
+```
 
-1. Reinstall Python from https://www.python.org/downloads/.
-2. During install, check **Add Python to PATH**.
-3. Close and reopen PowerShell or Command Prompt.
-
-On macOS, try:
+On macOS, also try:
 
 ```bash
 python3 --version
 ```
 
-If that works, use `python3` instead of `python`.
+If a command prints a version number, that tool is working.
 
-### `npm` is not recognized
+### Windows PATH Fix For Git
 
-Node.js is missing.
+1. Install Git from https://git-scm.com/downloads.
+2. During setup, keep the option that allows Git from the command line.
+3. Close PowerShell or Command Prompt.
+4. Open a new PowerShell or Command Prompt.
+5. Run:
 
-Fix:
+```bat
+git --version
+```
+
+If it still fails, restart your computer.
+
+### Windows PATH Fix For Python
+
+Best fix:
+
+1. Download Python from https://www.python.org/downloads/.
+2. Run the installer again.
+3. Check **Add Python to PATH**.
+4. Click **Install Now** or **Modify**.
+5. Close and reopen your terminal.
+6. Run:
+
+```bat
+python --version
+```
+
+If `python` still does not work, try:
+
+```bat
+py --version
+```
+
+If `py` works but `python` does not, Python is installed but not on PATH. Re-run the installer and choose **Add Python to PATH**.
+
+### Windows PATH Fix For Node.js And npm
 
 1. Install Node.js LTS from https://nodejs.org/.
-2. Close and reopen your terminal.
-3. Run:
+2. Keep the default install options.
+3. Close and reopen your terminal.
+4. Run:
 
-```bash
+```bat
+node --version
 npm --version
 ```
 
-### The website opens, but buttons fail or data does not load
+If it still fails, restart your computer.
+
+### macOS PATH Fix For Git
+
+Try:
+
+```bash
+git --version
+```
+
+If macOS asks you to install command line developer tools, accept it.
+
+You can also install Git with Homebrew:
+
+```bash
+brew install git
+```
+
+### macOS PATH Fix For Python
+
+macOS often uses `python3` instead of `python`.
+
+Try:
+
+```bash
+python3 --version
+```
+
+If that works, use `python3` when creating environments:
+
+```bash
+python3 -m venv .venv
+```
+
+If Python is missing, install it with Homebrew:
+
+```bash
+brew install python
+```
+
+### macOS PATH Fix For Node.js And npm
+
+Install Node.js with Homebrew:
+
+```bash
+brew install node
+```
+
+Then check:
+
+```bash
+node --version
+npm --version
+```
+
+If `brew` is not found, install Homebrew from https://brew.sh/.
+
+## Common Issues
+
+| Problem | What It Usually Means | Fix |
+| --- | --- | --- |
+| `git is not recognized` | Git is missing or PATH is broken | Install Git, reopen terminal, check `git --version` |
+| `python is not recognized` | Python is missing or PATH is broken | Reinstall Python and check **Add Python to PATH** |
+| `npm is not recognized` | Node.js is missing or PATH is broken | Install Node.js LTS, reopen terminal |
+| Website opens but buttons fail | Backend is not running | Start the backend on port `8000` |
+| Port `3000` is busy | Another website is using it | Run frontend on port `3001` |
+| Port `8000` is busy | Another backend is using it | Run backend on port `8001` |
+| Gemini key fails | Key is wrong, disabled, or copied badly | Create a new key in Google AI Studio |
+| Setup script fails halfway | One required tool is missing | Check Git, Node.js, npm, and Python versions |
+
+### Website Opens, But Data Does Not Load
 
 The backend is probably not running.
 
 Fix:
-
-1. Open a terminal.
-2. Go to the project folder.
-3. Start the backend:
 
 ```bash
 cd backend
@@ -227,35 +322,31 @@ uvicorn app.main:app --reload --port 8000
 
 Then refresh the website.
 
-### Port 3000 is already in use
+### Port 3000 Is Already In Use
 
-Another website is already using port 3000.
-
-Fix:
+Run the frontend on another port:
 
 ```bash
 cd frontend
 npm run dev -- -p 3001
 ```
 
-Then open:
+Open:
 
 ```text
 http://localhost:3001
 ```
 
-### Port 8000 is already in use
+### Port 8000 Is Already In Use
 
-Another backend is already using port 8000.
-
-Fix:
+Run the backend on another port:
 
 ```bash
 cd backend
 uvicorn app.main:app --reload --port 8001
 ```
 
-Then the frontend must be told to use the new backend address.
+Then tell the frontend to use the new backend address.
 
 Command Prompt:
 
@@ -280,49 +371,17 @@ cd frontend
 NEXT_PUBLIC_API_BASE=http://localhost:8001 npm run dev
 ```
 
-### Gemini says the API key is invalid
+## Folder Guide
 
-Possible causes:
-
-- The key was copied incorrectly.
-- The key was deleted or disabled in Google AI Studio.
-- Your Google account does not have access to that model.
-
-Fix:
-
-1. Create a new key in Google AI Studio.
-2. Paste it again in **Tutor Settings**.
-3. Click **Fetch Models**.
-
-### The setup script fails halfway
-
-This usually means one required tool is missing.
-
-Fix:
-
-1. Confirm Git, Node.js, and Python are installed.
-2. Close and reopen your terminal.
-3. Run the setup script again.
-
-Check versions:
-
-```bash
-git --version
-node --version
-npm --version
-python --version
+```text
+Studyplanner/
+  backend/    Local API, planner logic, Python runner, SQL runner
+  database/   SQLite schema and starter curriculum data
+  frontend/   Website interface
+  scripts/    Setup scripts for Windows and macOS
 ```
 
-On macOS, use `python3 --version` if `python --version` does not work.
-
-## Project Structure
-
-- `frontend`: the website, built with Next.js and Tailwind CSS.
-- `backend`: the local API, built with FastAPI.
-- `database`: SQLite schema and starter curriculum.
-- `scripts`: setup scripts for Windows and macOS.
-
-## For Developers
+## Developer Commands
 
 Backend tests:
 
@@ -337,3 +396,14 @@ Frontend tests:
 cd frontend
 npm test -- --watch=false
 ```
+
+## Quick Mental Model
+
+Think of the app as two pieces:
+
+| Piece | What It Does | Address |
+| --- | --- | --- |
+| Backend | Saves plans, runs Python/SQL, talks to Gemini | `http://localhost:8000` |
+| Frontend | The website you click around in | `http://localhost:3000` |
+
+Both pieces must be running at the same time.
