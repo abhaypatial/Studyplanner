@@ -58,3 +58,27 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .certificate-modal, .certificate-modal * {
+    visibility: visible;
+  }
+  .certificate-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none !important;
+    background: #0f172a !important; /* Dark slate background */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+}

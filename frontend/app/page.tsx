@@ -58,9 +58,13 @@ export default function Home() {
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("gemini-2.5-flash");
   const [chatInput, setChatInput] = useState("");
+  const [studentName, setStudentName] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatError, setChatError] = useState("");
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [certificate, setCertificate] = useState<{ name: string; moduleTitle: string; date: string } | null>(null);
   const [quizState, setQuizState] = useState({
     modalOpen: false,
     loading: false,
@@ -70,17 +74,69 @@ export default function Home() {
     currentQuestion: 0,
     score: 0,
   });
+  const [motivationalMessage, setMotivationalMessage] = useState("");
   const studyRef = useRef<HTMLDivElement>(null);
+
+  // Rotating motivational message logic
+  useEffect(() => {
+    if (!plan) return;
+    
+    const generateMessage = () => {
+      const name = studentName.trim() || "friend";
+      const subject = selectedModuleId ? plan.schedule.find(m => m.module_id === selectedModuleId)?.title : role;
+      const prog = !plan.schedule.length ? 0 : (() => {
+        let t = 0, c = 0;
+        plan.schedule.forEach(m => {
+          t++; if (m.status === "done") c++;
+          if (m.materials) { t += m.materials.length; c += m.materials.filter(x => x.is_completed).length; }
+        });
+        return Math.round((c / t) * 100);
+      })();
+      
+      const messages = [
+        `Hey ${name}, you're crushing ${subject}! Keep it up or I'll tell your mom.`,
+        `Did you know? Every time ${name} studies ${subject}, a bug gets fixed somewhere.`,
+        `${name}, you are currently 100% more productive than a potato. Great job!`,
+        `Wow ${name}, learning ${subject}? Your brain is getting huge. I can almost see it from here.`,
+        `Don't stop now ${name}! ${subject} isn't going to learn itself, sadly.`,
+        `${prog}% done? ${name}, you're a machine! Beep boop.`,
+        `Take a sip of water, ${name}. Dehydrated developers write spaghetti code.`,
+        `Look at ${name} mastering ${subject}! Watch out Silicon Valley!`,
+        `I asked the AI who's the best at ${subject}. It said ${name}. (I might have biased it).`
+      ];
+      
+      setMotivationalMessage(messages[Math.floor(Math.random() * messages.length)]);
+    };
+
+    generateMessage();
+    const interval = setInterval(generateMessage, 5 * 60 * 1000); // every 5 mins
+    return () => clearInterval(interval);
+  }, [plan, studentName, selectedModuleId, role]);
 
   useEffect(() => {
     setApiKey(localStorage.getItem("gemini_api_key") ?? "");
     setModel(localStorage.getItem("gemini_model") ?? "gemini-2.5-flash");
+    setStudentName(localStorage.getItem("studentName") ?? "");
+    setMounted(true);
   }, []);
 
   const progress = useMemo(() => {
     if (!plan?.schedule.length) return 0;
-    const done = plan.schedule.filter((item) => item.status === "done").length;
-    return Math.round((done / plan.schedule.length) * 100);
+    
+    let totalItems = 0;
+    let completedItems = 0;
+
+    plan.schedule.forEach((module) => {
+      totalItems += 1;
+      if (module.status === "done") completedItems += 1;
+
+      if (module.materials) {
+        totalItems += module.materials.length;
+        completedItems += module.materials.filter((m) => m.is_completed).length;
+      }
+    });
+
+    return Math.round((completedItems / totalItems) * 100);
   }, [plan]);
 
   const activeModule = useMemo(() => {
@@ -191,6 +247,19 @@ export default function Home() {
       if (newScore === quizState.data.questions.length) {
          markDone(quizState.module!.module_id);
          setQuizState({ ...quizState, modalOpen: false });
+         
+         const today = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
+         const finalName = studentName.trim() || window.prompt("Please enter your name for the certificate:", "") || "Outstanding Student";
+         if (finalName !== studentName.trim()) {
+           setStudentName(finalName);
+           localStorage.setItem("studentName", finalName);
+         }
+         
+         setCertificate({
+           name: finalName,
+           moduleTitle: quizState.module!.title,
+           date: today,
+         });
       } else {
          setQuizState({ ...quizState, error: "You didn't score 100%. Please review the material and try again!", currentQuestion: 0, score: 0 });
       }
@@ -269,22 +338,45 @@ export default function Home() {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider animate-slide-in-right">Premium Edition</p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
-            aria-label="Toggle theme"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4 text-slate-800" />}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" asChild className="rounded-full border-white/10 hover:bg-white/10 transition-colors">
+              <a href="/settings" aria-label="Settings">
+                <Settings className="h-4 w-4 text-slate-800 dark:text-slate-200" />
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+              aria-label="Toggle theme"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4 text-slate-800" />)}
+              {!mounted && <div className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[360px_1fr] relative z-10">
+        <div className="space-y-6">
         <Card className="p-6 glass-effect animate-fade-up shadow-lg border-white/10 [animation-delay:100ms] opacity-0 hover:shadow-primary/10 transition-shadow">
           <h2 className="text-base font-semibold">Onboarding</h2>
           <div className="mt-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Your Name</label>
+              <input
+                type="text"
+                className="w-full rounded-md border border-white/10 bg-background p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                placeholder="Enter your name for certificates"
+                value={studentName}
+                onChange={(e) => {
+                  setStudentName(e.target.value);
+                  localStorage.setItem("studentName", e.target.value);
+                }}
+              />
+            </div>
+            
             <label className="block text-sm font-medium">Role</label>
             <select className="w-full rounded-md border bg-background p-2" value={role} onChange={(event) => setRole(event.target.value)}>
               {roles.map((item) => (
@@ -318,6 +410,19 @@ export default function Home() {
             <Button className="w-full" onClick={generatePlan}>Generate Plan</Button>
           </div>
         </Card>
+
+        {plan && motivationalMessage && (
+          <Card className="p-4 bg-gradient-to-r from-primary/20 to-blue-500/20 glass-effect border-primary/30 animate-fade-in shadow-lg shadow-primary/5 flex items-start gap-3">
+            <div className="flex-shrink-0 animate-bounce">
+              <Sparkles className="h-6 w-6 text-yellow-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-primary">Tutor Bot says:</h3>
+              <p className="text-sm text-muted-foreground mt-0.5">{motivationalMessage}</p>
+            </div>
+          </Card>
+        )}
+        </div>
 
         <div className="space-y-6">
           <Card className="p-6 glass-effect shadow-lg animate-fade-up [animation-delay:200ms] opacity-0 border-white/10 hover:shadow-primary/10 transition-shadow">
@@ -358,12 +463,38 @@ export default function Home() {
                       <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Due {item.due_date}</span>
                       <span className="rounded-full bg-secondary/80 px-2 py-0.5 text-secondary-foreground border shadow-sm">{item.priority}</span>
                     </div>
-                    <button className="w-full text-left focus:outline-none" onClick={() => setSelectedModuleId(item.module_id)}>
+                    <button className="w-full text-left focus:outline-none" onClick={() => setSelectedModuleId(selectedModuleId === item.module_id ? null : item.module_id)}>
                       <h3 className="text-lg font-bold leading-tight group-hover:text-primary transition-colors">{item.title}</h3>
                       <p className="mt-1.5 text-sm text-muted-foreground flex items-center gap-1.5">
                         <Database className="h-3.5 w-3.5" /> {item.materials?.length ?? 0} study resources
                       </p>
                     </button>
+                    {selectedModuleId === item.module_id && (
+                      <div className="mt-4 border-t border-white/10 pt-4 animate-fade-in">
+                        <p className="text-sm text-muted-foreground mb-3">{item.summary || `${item.est_hours ?? 0} estimated hours`}</p>
+                        <div className="space-y-2">
+                          {(item.materials ?? []).map((material) => (
+                            <div key={material.id} className="flex items-center justify-between rounded-md border border-white/5 bg-black/20 p-2 text-sm hover:bg-white/5 transition-colors">
+                              <label className="flex flex-1 cursor-pointer items-center gap-3">
+                                <input 
+                                  type="checkbox" 
+                                  checked={material.is_completed ?? false} 
+                                  onChange={(e) => toggleMaterial(material.id, e.target.checked)}
+                                  className="h-4 w-4 rounded border-gray-300 text-primary"
+                                />
+                                <span>
+                                  <span className={material.is_completed ? "line-through text-muted-foreground font-medium" : "font-medium"}>{material.title}</span>
+                                  <span className="ml-2 text-xs text-muted-foreground">{material.material_type}</span>
+                                </span>
+                              </label>
+                              <a href={material.url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary">
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <div className="mt-5 flex items-center gap-4">
                       <div className="flex-1">
                         <Progress value={item.status === "done" ? 100 : item.status === "active" ? 50 : 0} className="h-2.5 rounded-full" />
@@ -384,81 +515,8 @@ export default function Home() {
             </div>
           </Card>
 
-          <div ref={studyRef} className="grid gap-6 xl:grid-cols-[1fr_380px]">
-            <Card className="p-6 glass-effect animate-fade-up shadow-lg border-white/10 [animation-delay:300ms] opacity-0 hover:shadow-primary/10 transition-shadow">
-              <h2 className="text-base font-semibold">Study Materials</h2>
-              {activeModule ? (
-                <div className="mt-3">
-                  <p className="font-medium">{activeModule.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{activeModule.summary || `${activeModule.est_hours ?? 0} estimated hours`}</p>
-                  <div className="mt-4 space-y-2">
-                    {(activeModule.materials ?? []).map((material) => (
-                      <div key={material.id} className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-muted">
-                        <label className="flex flex-1 cursor-pointer items-center gap-3">
-                          <input 
-                            type="checkbox" 
-                            checked={material.is_completed ?? false} 
-                            onChange={(e) => toggleMaterial(material.id, e.target.checked)}
-                            className="h-4 w-4 rounded border-gray-300 text-primary"
-                          />
-                          <span>
-                            <span className={material.is_completed ? "line-through text-muted-foreground font-medium" : "font-medium"}>{material.title}</span>
-                            <span className="ml-2 text-xs text-muted-foreground">{material.material_type}</span>
-                          </span>
-                        </label>
-                        <a href={material.url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <p className="mt-3 text-sm text-muted-foreground">Generate a plan to see study links.</p>
-              )}
-            </Card>
-
-            <Card className="p-6 glass-effect animate-fade-up shadow-lg border-white/10 [animation-delay:400ms] opacity-0 hover:shadow-primary/10 transition-shadow">
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold">Tutor Chat</h2>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </a>
-                </Button>
-              </div>
-              <div className="mt-3 h-56 space-y-3 overflow-auto rounded-md border p-3">
-                {chatMessages.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Ask for a hint about the selected module.</p>
-                ) : (
-                  chatMessages.map((message, index) => (
-                    <div key={`${message.role}-${index}`} className="text-sm">
-                      <p className="font-medium">{message.role === "learner" ? "You" : "Tutor"}</p>
-                      <p className="whitespace-pre-wrap text-muted-foreground">{message.text}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-              {chatError ? <p className="mt-2 text-sm text-red-500">{chatError}</p> : null}
-              <div className="mt-3 flex gap-2">
-                <input
-                  className="min-w-0 flex-1 rounded-md border bg-background p-2 text-sm"
-                  placeholder="Ask for a hint..."
-                  value={chatInput}
-                  onChange={(event) => setChatInput(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") sendTutorMessage();
-                  }}
-                />
-                <Button onClick={sendTutorMessage} size="icon" aria-label="Send tutor message">
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-              </div>
-            </Card>
-          </div>
-
-          <Card className="p-6 glass-effect animate-fade-up shadow-lg border-white/10 [animation-delay:500ms] opacity-0 hover:shadow-primary/10 transition-shadow">
+          <div ref={studyRef} className="flex flex-col gap-6">
+            <Card className="p-6 glass-effect animate-fade-up shadow-lg border-white/10 [animation-delay:500ms] opacity-0 hover:shadow-primary/10 transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-semibold">Sandbox</h2>
@@ -478,6 +536,7 @@ export default function Home() {
             </div>
             <pre className="mt-4 min-h-24 overflow-auto rounded-md bg-muted p-3 font-mono text-sm">{output}</pre>
           </Card>
+        </div>
         </div>
       </section>
 
@@ -522,6 +581,119 @@ export default function Home() {
           </Card>
         </div>
       )}
+
+      {/* Certificate Modal */}
+      {certificate && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+          <div className="certificate-modal relative w-full max-w-3xl rounded-xl border border-yellow-500/30 bg-gradient-to-br from-slate-900 to-black p-1 shadow-[0_0_50px_rgba(234,179,8,0.2)] print:shadow-none print:border-none print:bg-black">
+            <div className="relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-yellow-500/40 bg-slate-950/80 p-12 text-center text-white overflow-hidden print:border-yellow-500 print:bg-black">
+              {/* Decorative elements */}
+              <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full" />
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full" />
+              
+              <div className="mb-4 rounded-full bg-yellow-500/20 p-4 animate-pulse-glow">
+                <Trophy className="h-12 w-12 text-yellow-400" />
+              </div>
+              
+              <h2 className="font-serif text-4xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200">
+                CERTIFICATE OF COMPLETION
+              </h2>
+              <p className="mt-4 text-lg text-slate-300 uppercase tracking-widest text-sm">
+                This is proudly presented to
+              </p>
+              
+              <h3 className="mt-6 font-serif text-5xl font-bold italic text-white animate-fade-up">
+                {certificate.name}
+              </h3>
+              
+              <p className="mt-6 max-w-lg text-slate-300">
+                For successfully completing the module and demonstrating exceptional understanding of:
+              </p>
+              <h4 className="mt-3 text-2xl font-semibold text-yellow-400">
+                {certificate.moduleTitle}
+              </h4>
+              
+              <div className="mt-12 flex w-full max-w-lg items-end justify-between border-t border-white/20 pt-6">
+                <div className="text-center">
+                  <p className="text-xl font-medium text-slate-300">{certificate.date}</p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-slate-500">Date Completed</p>
+                </div>
+                <div className="text-center">
+                  <div className="font-serif text-3xl italic text-slate-200" style={{ fontFamily: "'Brush Script MT', cursive" }}>
+                    Gemini Labs
+                  </div>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-slate-500">Lead Instructor</p>
+                </div>
+              </div>
+              
+              <div className="absolute top-4 right-4 flex gap-2 print:hidden">
+                <Button 
+                  variant="outline" 
+                  className="border-white/10 text-white hover:bg-white/10 bg-black/50 backdrop-blur-md"
+                  onClick={() => window.print()}
+                >
+                  Download PDF
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-white/10 text-white hover:bg-white/10 bg-black/50 backdrop-blur-md"
+                  onClick={() => setCertificate(null)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Tutor Chat */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+        {isChatOpen && (
+          <Card className="mb-4 w-80 p-4 glass-effect shadow-2xl border-white/10 animate-fade-up bg-slate-900/95 backdrop-blur-xl">
+            <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+              <h2 className="text-sm font-semibold flex items-center gap-2 text-white"><Sparkles className="h-4 w-4 text-yellow-400" /> AI Tutor Chat</h2>
+              <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-white/10 text-slate-300" onClick={() => setIsChatOpen(false)}>
+                &times;
+              </Button>
+            </div>
+            <div className="h-64 space-y-3 overflow-auto rounded-md border border-white/10 bg-black/40 p-3">
+              {chatMessages.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Ask for a hint about the selected module.</p>
+              ) : (
+                chatMessages.map((message, index) => (
+                  <div key={`${message.role}-${index}`} className="text-sm">
+                    <p className="text-xs font-semibold text-primary mb-1">{message.role === "learner" ? "You" : "Tutor"}</p>
+                    <p className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed">{message.text}</p>
+                  </div>
+                ))
+              )}
+            </div>
+            {chatError && <p className="mt-2 text-xs text-red-500">{chatError}</p>}
+            <div className="mt-3 flex gap-2">
+              <input
+                className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/50 p-2 text-xs text-white focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Ask for a hint..."
+                value={chatInput}
+                onChange={(event) => setChatInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") sendTutorMessage();
+                }}
+              />
+              <Button onClick={sendTutorMessage} size="icon" className="h-8 w-8 rounded-md" aria-label="Send tutor message">
+                <MessageCircle className="h-4 w-4" />
+              </Button>
+            </div>
+          </Card>
+        )}
+        
+        <Button 
+          className="h-14 w-14 rounded-full shadow-xl shadow-primary/20 bg-gradient-to-r from-primary to-blue-500 hover:scale-105 transition-transform flex items-center justify-center border border-white/20"
+          onClick={() => setIsChatOpen(!isChatOpen)}
+        >
+          <MessageCircle className="h-6 w-6 text-white" />
+        </Button>
+      </div>
     </main>
   );
 }
