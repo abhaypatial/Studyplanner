@@ -10,6 +10,8 @@ This project runs on your own computer. You do not need to publish anything onli
 - Lets you mark skills you already know so the plan skips beginner work.
 - Creates a timeline based on your target completion window.
 - Gives you a local Python and SQL practice sandbox.
+- Shows study material links for the module you are working on.
+- Lets you mark modules as done and continue with **Resume Study**.
 - Lets you add a Google Gemini API key for tutor features.
 - Stores app data locally with SQLite.
 
@@ -130,6 +132,9 @@ Open `http://localhost:3000` in your browser.
 4. Click **Generate Plan**.
 5. Follow the dashboard.
 6. Use the sandbox to practice Python or SQL.
+7. Open study material links from the **Study Materials** section.
+8. Click **Mark as Done** when you finish a module.
+9. Use **Resume Study** to jump back to the next unfinished module.
 
 ## How To Add A Gemini API Key
 
@@ -156,6 +161,20 @@ http://localhost:3000
 If the key works, you will see Gemini models listed.
 
 Keep your API key private. Do not upload it to GitHub or share it in screenshots.
+
+After saving the key, return to the main planner page and use **Tutor Chat**. The tutor will answer based on the module currently selected in your plan.
+
+## Reset Your Plan
+
+If you want to start over, use the **Reset** button on the dashboard. This clears the current plan from the app.
+
+If you want to fully reset the local database file, stop the backend first, then delete:
+
+```text
+database/study_planner.db
+```
+
+The next time the backend starts, it will recreate and seed the database.
 
 ## PATH Problems And Fixes
 
@@ -304,6 +323,7 @@ If `brew` is not found, install Homebrew from https://brew.sh/.
 | `python is not recognized` | Python is missing or PATH is broken | Reinstall Python and check **Add Python to PATH** |
 | `npm is not recognized` | Node.js is missing or PATH is broken | Install Node.js LTS, reopen terminal |
 | Website opens but buttons fail | Backend is not running | Start the backend on port `8000` |
+| Tutor says to add a key | Gemini key was not saved | Open **Tutor Settings**, paste the key, fetch models, and save |
 | Port `3000` is busy | Another website is using it | Run frontend on port `3001` |
 | Port `8000` is busy | Another backend is using it | Run backend on port `8001` |
 | Gemini key fails | Key is wrong, disabled, or copied badly | Create a new key in Google AI Studio |

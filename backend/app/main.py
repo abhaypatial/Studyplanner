@@ -3,12 +3,13 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from datetime import date
 
+import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from .db import connect, initialize_database, rows_to_dicts
-from .gemini import list_models
+from .gemini import chat, list_models
 from .runners import run_python, run_sql
 from .scheduler import build_schedule, selected_paths
 
@@ -52,6 +53,31 @@ class ProgressRequest(BaseModel):
     status: str = Field(pattern="^(pending|active|done)$")
 
 
+class TutorRequest(BaseModel):
+    api_key: str
+    model: str = "gemini-2.5-flash"
+    message: str = Field(min_length=1, max_length=4000)
+    module_title: str | None = None
+
+
+def attach_materials(conn, modules: list[dict]) -> list[dict]:
+    if not modules:
+        return modules
+    module_ids = [module["id"] if "id" in module else module["module_id"] for module in modules]
+    placeholders = ",".join("?" for _ in module_ids)
+    rows = conn.execute(
+        f"SELECT * FROM materials WHERE module_id IN ({placeholders}) ORDER BY id",
+        module_ids,
+    ).fetchall()
+    materials_by_module: dict[int, list[dict]] = {}
+    for row in rows_to_dicts(rows):
+        materials_by_module.setdefault(row["module_id"], []).append(row)
+    for module in modules:
+        module_id = module["id"] if "id" in module else module["module_id"]
+        module["materials"] = materials_by_module.get(module_id, [])
+    return modules
+
+
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
@@ -81,7 +107,7 @@ def generate_plan(payload: OnboardingRequest) -> dict:
             f"SELECT * FROM modules WHERE path_id IN ({placeholders}) ORDER BY id",
             paths,
         ).fetchall()
-        modules_for_plan = rows_to_dicts(module_rows)
+        modules_for_plan = attach_materials(conn, rows_to_dicts(module_rows))
 
         cursor = conn.execute(
             "INSERT INTO users (chosen_path, target_months, start_date) VALUES (?, ?, ?)",
@@ -117,7 +143,25 @@ def generate_plan(payload: OnboardingRequest) -> dict:
                 ),
             )
 
-    return {"user_id": user_id, "weekly_hours": schedule[0].weekly_hours if schedule else 0, "schedule": schedule}
+    schedule_by_id = {item.module_id: item for item in schedule}
+    response_schedule = []
+    for module in modules_for_plan:
+        item = schedule_by_id[module["id"]]
+        response_schedule.append(
+            {
+                "module_id": item.module_id,
+                "title": item.title,
+                "status": item.status,
+                "due_date": item.due_date,
+                "weekly_hours": item.weekly_hours,
+                "priority": item.priority,
+                "est_hours": module["est_hours"],
+                "summary": module["summary"],
+                "materials": module["materials"],
+            }
+        )
+
+    return {"user_id": user_id, "weekly_hours": schedule[0].weekly_hours if schedule else 0, "schedule": response_schedule}
 
 
 @app.get("/api/progress/{user_id}")
@@ -126,7 +170,7 @@ def get_progress(user_id: int) -> list[dict]:
     with connect() as conn:
         rows = conn.execute(
             """
-            SELECT p.*, m.title, m.priority, m.est_hours
+            SELECT p.*, m.title, m.priority, m.est_hours, m.summary
             FROM progress p
             JOIN modules m ON m.id = p.module_id
             WHERE p.user_id = ?
@@ -134,7 +178,8 @@ def get_progress(user_id: int) -> list[dict]:
             """,
             (user_id,),
         ).fetchall()
-    return rows_to_dicts(rows)
+        progress_rows = rows_to_dicts(rows)
+        return attach_materials(conn, progress_rows)
 
 
 @app.post("/api/progress")
@@ -147,6 +192,13 @@ def update_progress(payload: ProgressRequest) -> dict:
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Progress record not found.")
+    return {"ok": True}
+
+
+@app.delete("/api/progress/{user_id}")
+def reset_progress(user_id: int) -> dict:
+    with connect() as conn:
+        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
     return {"ok": True}
 
 
@@ -163,3 +215,14 @@ def execute_sql(payload: RunnerRequest) -> dict:
 @app.get("/api/gemini/models")
 async def gemini_models(api_key: str | None = None) -> dict:
     return {"models": await list_models(api_key)}
+
+
+@app.post("/api/gemini/chat")
+async def gemini_chat(payload: TutorRequest) -> dict:
+    try:
+        reply = await chat(payload.api_key, payload.model, payload.message, payload.module_title)
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(status_code=400, detail=f"Gemini request failed: {exc.response.text}") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"reply": reply}

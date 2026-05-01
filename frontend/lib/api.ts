@@ -20,9 +20,46 @@ export async function runCode(language: "python" | "sql", code: string) {
   return response.json();
 }
 
+export async function getProgress(userId: number) {
+  const response = await fetch(`${API_BASE}/api/progress/${userId}`);
+  if (!response.ok) throw new Error("Failed to load progress");
+  return response.json();
+}
+
+export async function updateProgress(payload: { user_id: number; module_id: number; status: "pending" | "active" | "done" }) {
+  const response = await fetch(`${API_BASE}/api/progress`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error("Failed to update progress");
+  return response.json();
+}
+
+export async function resetProgress(userId: number) {
+  const response = await fetch(`${API_BASE}/api/progress/${userId}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Failed to reset progress");
+  return response.json();
+}
+
 export async function fetchGeminiModels(apiKey: string) {
   const params = apiKey ? `?api_key=${encodeURIComponent(apiKey)}` : "";
   const response = await fetch(`${API_BASE}/api/gemini/models${params}`);
   if (!response.ok) throw new Error("Failed to fetch Gemini models");
+  return response.json();
+}
+
+export async function askTutor(payload: { api_key: string; model: string; message: string; module_title?: string }) {
+  const response = await fetch(`${API_BASE}/api/gemini/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: "Tutor request failed" }));
+    throw new Error(error.detail ?? "Tutor request failed");
+  }
   return response.json();
 }
