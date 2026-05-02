@@ -1,0 +1,102 @@
+export const MODULES = [
+  { id: 1, title: 'Python Basics', est_hours: 8, summary: 'Syntax, control flow, functions, data structures, and scripts.' },
+  { id: 2, title: 'Git and Reproducible Workflows', est_hours: 4, summary: 'Version control, branches, commits, notebooks, and environments.' },
+  { id: 3, title: 'SQL Joins and Aggregations', est_hours: 7, summary: 'Relational querying, joins, grouping, filtering, and window functions.' },
+  { id: 4, title: 'Linear Algebra for ML', est_hours: 10, summary: 'Vectors, matrices, projections, eigen intuition, and model geometry.' },
+  { id: 5, title: 'Probability and Statistics', est_hours: 12, summary: 'Distributions, inference, uncertainty, and experiment design.' },
+  { id: 6, title: 'Data Visualization', est_hours: 8, summary: 'Charts, dashboards, visual encodings, and communication.' },
+  { id: 7, title: 'Exploratory Data Analysis', est_hours: 10, summary: 'Cleaning, summaries, feature inspection, and anomaly detection.' },
+  { id: 8, title: 'Classical Machine Learning', est_hours: 16, summary: 'Regression, trees, validation, metrics, and model selection.' },
+  { id: 9, title: 'Feature Engineering and Pipelines', est_hours: 14, summary: 'Reusable preprocessing, leakage control, and production data flows.' },
+  { id: 10, title: 'Deep Learning Foundations', est_hours: 18, summary: 'Neural networks, training loops, embeddings, and architectures.' },
+  { id: 11, title: 'LLM Applications and Evaluation', est_hours: 14, summary: 'Prompting, RAG, evaluation, safety, and deployment patterns.' },
+  { id: 12, title: 'AI Systems Architecture', est_hours: 18, summary: 'System design for AI products, governance, cost, reliability, and scaling.' },
+  { id: 13, title: 'Capstone Project & Portfolio', est_hours: 20, summary: 'Build an end-to-end ML/Data application, deploy to the cloud, and write a portfolio case study.' },
+  { id: 14, title: 'Calculus & Optimization', est_hours: 15, summary: 'Derivatives, integrals, gradients, and optimization techniques.' },
+  { id: 15, title: 'Data Structures & Algorithms', est_hours: 20, summary: 'Arrays, linked lists, trees, graphs, and algorithmic complexity.' },
+  { id: 16, title: 'Database Management Systems', est_hours: 12, summary: 'Normalization, transactions, indexing, and advanced SQL.' },
+  { id: 17, title: 'GATE Practice & Test Series', est_hours: 15, summary: 'Previous year questions, mock tests, and time management.' },
+  { id: 18, title: 'Revision & Notebooks', est_hours: 10, summary: 'Formula notebook, mistake notebook, and PYQ notebook.' }
+];
+
+export const MATERIALS = [
+  { module_id: 1, title: 'Python for Everybody (English)', material_type: 'free_book', url: 'https://www.py4e.com/book' },
+  { module_id: 1, title: 'Kaggle Python Course (Fun Interactive)', material_type: 'interactive', url: 'https://www.kaggle.com/learn/python' },
+  { module_id: 1, title: 'CodeWithHarry 100 Days of Code (Hindi)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLu0W_9lII9agwh1XjRt242xIpHhPT2llg' },
+  { module_id: 1, title: 'Corey Schafer Python', material_type: 'video_playlist', url: 'https://www.youtube.com/c/Coreyms' },
+  { module_id: 1, title: 'Python Crash Course', material_type: 'book', url: 'https://ehmatthes.github.io/pcc/' },
+  { module_id: 1, title: 'HackerRank Python', material_type: 'interactive', url: 'https://www.hackerrank.com/domains/python' },
+  { module_id: 1, title: 'LeetCode Python', material_type: 'interactive', url: 'https://leetcode.com/' },
+
+  { module_id: 2, title: 'Learn Git Branching (Fun Interactive)', material_type: 'interactive', url: 'https://learngitbranching.js.org/' },
+  { module_id: 2, title: 'CodeWithHarry Git & GitHub (Hindi)', material_type: 'video', url: 'https://www.youtube.com/watch?v=gwWKnnCMQ5c' },
+
+  { module_id: 3, title: 'SQLBolt (Fun Interactive)', material_type: 'interactive', url: 'https://sqlbolt.com/' },
+  { module_id: 3, title: 'Select Star SQL (Interactive)', material_type: 'interactive', url: 'https://selectstarsql.com/' },
+  { module_id: 3, title: 'Krish Naik SQL Playlist (Hindi)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLZoTAELRMXVPhVsq3qLeWS5csXxdRzaB3' },
+
+  { module_id: 4, title: '3Blue1Brown Essence of Linear Algebra (English)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab' },
+  { module_id: 4, title: 'Gilbert Strang MIT OCW', material_type: 'course', url: 'https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/' },
+  { module_id: 4, title: 'Khan Academy Linear Algebra', material_type: 'interactive', url: 'https://www.khanacademy.org/math/linear-algebra' },
+  { module_id: 4, title: 'Schaums Outline of Linear Algebra', material_type: 'book', url: 'https://www.mhprofessional.com/schaums' },
+  { module_id: 4, title: 'Linear Algebra Done Right', material_type: 'book', url: 'https://linear.axler.net/' },
+  { module_id: 4, title: 'GO Classes Linear Algebra', material_type: 'video', url: 'https://www.goclasses.in/' },
+  { module_id: 4, title: 'GateWallah Linear Algebra', material_type: 'video', url: 'https://physicswallah.live/' },
+
+  { module_id: 14, title: 'Professor Leonard Calculus', material_type: 'video_playlist', url: 'https://www.youtube.com/user/professorleonard57' },
+  { module_id: 14, title: 'Khan Academy Calculus', material_type: 'interactive', url: 'https://www.khanacademy.org/math/calculus-1' },
+  { module_id: 14, title: 'MIT Single Variable Calculus', material_type: 'course', url: 'https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/' },
+  { module_id: 14, title: 'GO Classes Calculus', material_type: 'video', url: 'https://www.goclasses.in/' },
+  { module_id: 14, title: 'Unacademy GATE DA Calculus', material_type: 'video', url: 'https://unacademy.com/' },
+
+  { module_id: 5, title: 'StatQuest Statistics Fundamentals (English)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLblh5JKOoLUK0FLuzwntyYI10UQFUhsY9' },
+  { module_id: 5, title: 'Krish Naik Statistics in ML (Hindi)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLZoTAELRMXVN5QNaIWEA1xFXfD50gIfL2' },
+  { module_id: 5, title: 'StatQuest Probability', material_type: 'video_playlist', url: 'https://www.youtube.com/c/joshstarmer' },
+  { module_id: 5, title: 'Khan Academy Statistics', material_type: 'interactive', url: 'https://www.khanacademy.org/math/statistics-probability' },
+  { module_id: 5, title: 'Introduction to Probability', material_type: 'book', url: 'https://v8doc.sas.com/sashtml/stat/chap1.htm' },
+  { module_id: 5, title: 'Think Stats', material_type: 'free_book', url: 'https://greenteapress.com/wp/think-stats-2e/' },
+  { module_id: 5, title: 'GO Classes Probability', material_type: 'video', url: 'https://www.goclasses.in/' },
+  { module_id: 5, title: 'GateWallah Statistics', material_type: 'video', url: 'https://physicswallah.live/' },
+
+  { module_id: 6, title: 'Data Visualization Curriculum (English)', material_type: 'free_book', url: 'https://uwdata.github.io/visualization-curriculum/' },
+
+  { module_id: 7, title: 'Kaggle Pandas Course (Interactive)', material_type: 'interactive', url: 'https://www.kaggle.com/learn/pandas' },
+  { module_id: 7, title: 'NumPy Official Documentation', material_type: 'free_book', url: 'https://numpy.org/doc/' },
+  { module_id: 7, title: 'FreeCodeCamp NumPy', material_type: 'video', url: 'https://www.youtube.com/watch?v=QUT1VHiLmmI' },
+  { module_id: 7, title: 'Corey Schafer Pandas Playlist', material_type: 'video_playlist', url: 'https://www.youtube.com/watch?v=ZyhVh-qRZPA&list=PL-osiE80TeTsWmV9i9c58mdDZAsk5642h' },
+
+  { module_id: 8, title: 'fast.ai Practical Deep Learning (English)', material_type: 'course', url: 'https://course.fast.ai/' },
+  { module_id: 8, title: 'CampusX 100 Days of ML (Hindi)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLKnIA16_Rmvbr7zKYQuBfsVkjoLcU0Fvg' },
+  { module_id: 8, title: 'StatQuest ML', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLblh5JKOoLUICTaGLRoHQDuEAq44JND6q' },
+  { module_id: 8, title: 'Andrew Ng ML Course', material_type: 'course', url: 'https://www.coursera.org/specializations/machine-learning-introduction' },
+  { module_id: 8, title: 'Hands-On Machine Learning', material_type: 'book', url: 'https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/' },
+  { module_id: 8, title: 'ISLR', material_type: 'free_book', url: 'https://www.statlearning.com/' },
+
+  { module_id: 10, title: 'Andrej Karpathy Neural Networks: Zero to Hero (English)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ' },
+  { module_id: 10, title: 'Krish Naik Deep Learning Playlist (Hindi)', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLZoTAELRMXVPGU70ZGsckrMdr0FteeRUi' },
+  { module_id: 10, title: 'Neso Academy AI', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLBlnK6fEyqRjgVgPO4X9b9B_DkP5A-H-v' },
+  { module_id: 10, title: 'Gate Smashers AI', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiHGhOHV-nwb0HR5US5GFKFI' },
+
+  { module_id: 11, title: 'Hugging Face NLP Course (English)', material_type: 'course', url: 'https://huggingface.co/learn/nlp-course/chapter1/1' },
+  { module_id: 12, title: 'Google Machine Learning Crash Course (English)', material_type: 'course', url: 'https://developers.google.com/machine-learning/crash-course' },
+  { module_id: 13, title: 'Hugging Face Spaces (Deployment Hosting)', material_type: 'deployment', url: 'https://huggingface.co/spaces' },
+  { module_id: 13, title: 'Streamlit Python Dashboards', material_type: 'deployment', url: 'https://streamlit.io/' },
+
+  { module_id: 15, title: 'Abdul Bari Algorithms', material_type: 'video_playlist', url: 'https://www.youtube.com/channel/UCZCFT11CWBi3MHNlGf019nw' },
+  { module_id: 15, title: 'CS50 Harvard University', material_type: 'course', url: 'https://cs50.harvard.edu/x/' },
+  { module_id: 15, title: 'LeetCode', material_type: 'interactive', url: 'https://leetcode.com/' },
+  { module_id: 15, title: 'HackerRank', material_type: 'interactive', url: 'https://www.hackerrank.com/' },
+  { module_id: 15, title: 'CLRS Introduction to Algorithms', material_type: 'book', url: 'https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/' },
+
+  { module_id: 16, title: 'Gate Smashers DBMS', material_type: 'video_playlist', url: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y' },
+  { module_id: 16, title: 'SQLBolt', material_type: 'interactive', url: 'https://sqlbolt.com/' },
+  { module_id: 16, title: 'LeetCode SQL', material_type: 'interactive', url: 'https://leetcode.com/studyplan/top-sql-50/' },
+
+  { module_id: 17, title: 'GATE Overflow', material_type: 'interactive', url: 'https://gateoverflow.in/' },
+  { module_id: 17, title: 'GO Classes Mock Tests', material_type: 'interactive', url: 'https://www.goclasses.in/' },
+  { module_id: 17, title: 'MadeEasy', material_type: 'interactive', url: 'https://www.madeeasy.in/' },
+  { module_id: 17, title: 'Testbook', material_type: 'interactive', url: 'https://testbook.com/gate-preparation' }
+];
+
+// Recreate default generated sequence
+export const DEFAULT_PLAN_IDS = [1, 2, 3, 4, 14, 5, 6, 7, 15, 16, 8, 9, 10, 11, 12, 17, 18, 13];

@@ -61,3 +61,63 @@ INSERT OR IGNORE INTO materials (module_id, title, material_type, url) VALUES
   
   (13, 'Hugging Face Spaces (Deployment Hosting)', 'deployment', 'https://huggingface.co/spaces'),
   (13, 'Streamlit Python Dashboards', 'deployment', 'https://streamlit.io/');
+
+INSERT OR IGNORE INTO modules (id, title, path_id, priority, is_common_core, est_hours, summary) VALUES
+  (14, 'Calculus & Optimization', 'foundations', 'high', 1, 15, 'Derivatives, integrals, gradients, and optimization techniques.'),
+  (15, 'Data Structures & Algorithms', 'foundations', 'high', 1, 20, 'Arrays, linked lists, trees, graphs, and algorithmic complexity.'),
+  (16, 'Database Management Systems', 'foundations', 'high', 1, 12, 'Normalization, transactions, indexing, and advanced SQL.'),
+  (17, 'GATE Practice & Test Series', 'foundations', 'high', 1, 15, 'Previous year questions, mock tests, and time management.'),
+  (18, 'Revision & Notebooks', 'foundations', 'high', 1, 10, 'Formula notebook, mistake notebook, and PYQ notebook.');
+
+INSERT OR IGNORE INTO materials (module_id, title, material_type, url) VALUES
+  (4, 'Gilbert Strang MIT OCW', 'course', 'https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/'),
+  (4, 'Khan Academy Linear Algebra', 'interactive', 'https://www.khanacademy.org/math/linear-algebra'),
+  (4, 'Schaums Outline of Linear Algebra', 'book', 'https://www.mhprofessional.com/schaums'),
+  (4, 'Linear Algebra Done Right', 'book', 'https://linear.axler.net/'),
+  (4, 'GO Classes Linear Algebra', 'video', 'https://www.goclasses.in/'),
+  (4, 'GateWallah Linear Algebra', 'video', 'https://physicswallah.live/'),
+  
+  (14, 'Professor Leonard Calculus', 'video_playlist', 'https://www.youtube.com/user/professorleonard57'),
+  (14, 'Khan Academy Calculus', 'interactive', 'https://www.khanacademy.org/math/calculus-1'),
+  (14, 'MIT Single Variable Calculus', 'course', 'https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/'),
+  (14, 'GO Classes Calculus', 'video', 'https://www.goclasses.in/'),
+  (14, 'Unacademy GATE DA Calculus', 'video', 'https://unacademy.com/'),
+
+  (5, 'StatQuest Probability', 'video_playlist', 'https://www.youtube.com/c/joshstarmer'),
+  (5, 'Khan Academy Statistics', 'interactive', 'https://www.khanacademy.org/math/statistics-probability'),
+  (5, 'Introduction to Probability', 'book', 'https://v8doc.sas.com/sashtml/stat/chap1.htm'),
+  (5, 'Think Stats', 'free_book', 'https://greenteapress.com/wp/think-stats-2e/'),
+  (5, 'GO Classes Probability', 'video', 'https://www.goclasses.in/'),
+  (5, 'GateWallah Statistics', 'video', 'https://physicswallah.live/'),
+
+  (1, 'Corey Schafer Python', 'video_playlist', 'https://www.youtube.com/c/Coreyms'),
+  (1, 'Python Crash Course', 'book', 'https://ehmatthes.github.io/pcc/'),
+  (1, 'HackerRank Python', 'interactive', 'https://www.hackerrank.com/domains/python'),
+  (1, 'LeetCode Python', 'interactive', 'https://leetcode.com/'),
+
+  (7, 'NumPy Official Documentation', 'free_book', 'https://numpy.org/doc/'),
+  (7, 'FreeCodeCamp NumPy', 'video', 'https://www.youtube.com/watch?v=QUT1VHiLmmI'),
+  (7, 'Corey Schafer Pandas Playlist', 'video_playlist', 'https://www.youtube.com/watch?v=ZyhVh-qRZPA&list=PL-osiE80TeTsWmV9i9c58mdDZAsk5642h'),
+
+  (15, 'Abdul Bari Algorithms', 'video_playlist', 'https://www.youtube.com/channel/UCZCFT11CWBi3MHNlGf019nw'),
+  (15, 'CS50 Harvard University', 'course', 'https://cs50.harvard.edu/x/'),
+  (15, 'LeetCode', 'interactive', 'https://leetcode.com/'),
+  (15, 'HackerRank', 'interactive', 'https://www.hackerrank.com/'),
+  (15, 'CLRS Introduction to Algorithms', 'book', 'https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/'),
+
+  (16, 'Gate Smashers DBMS', 'video_playlist', 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y'),
+  (16, 'SQLBolt', 'interactive', 'https://sqlbolt.com/'),
+  (16, 'LeetCode SQL', 'interactive', 'https://leetcode.com/studyplan/top-sql-50/'),
+
+  (8, 'StatQuest ML', 'video_playlist', 'https://www.youtube.com/playlist?list=PLblh5JKOoLUICTaGLRoHQDuEAq44JND6q'),
+  (8, 'Andrew Ng ML Course', 'course', 'https://www.coursera.org/specializations/machine-learning-introduction'),
+  (8, 'Hands-On Machine Learning', 'book', 'https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/'),
+  (8, 'ISLR', 'free_book', 'https://www.statlearning.com/'),
+
+  (10, 'Neso Academy AI', 'video_playlist', 'https://www.youtube.com/playlist?list=PLBlnK6fEyqRjgVgPO4X9b9B_DkP5A-H-v'),
+  (10, 'Gate Smashers AI', 'video_playlist', 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiHGhOHV-nwb0HR5US5GFKFI'),
+
+  (17, 'GATE Overflow', 'interactive', 'https://gateoverflow.in/'),
+  (17, 'GO Classes Mock Tests', 'interactive', 'https://www.goclasses.in/'),
+  (17, 'MadeEasy', 'interactive', 'https://www.madeeasy.in/'),
+  (17, 'Testbook', 'interactive', 'https://testbook.com/gate-preparation');

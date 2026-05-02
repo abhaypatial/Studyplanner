@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, CheckCircle2, ExternalLink, MessageCircle, Moon, Play, Settings, Sun, Flame, Star, Trophy, Database, Sword, Calendar, Sparkles, Zap } from "lucide-react";
+import { BookOpen, CheckCircle2, ExternalLink, MessageCircle, Moon, Play, Settings, Sun, Flame, Star, Trophy, Database, Sword, Calendar, Sparkles, Zap, Volume2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { askTutor, getProgress, resetProgress, runCode, submitPlan, updateProgress, updateMaterialProgress, generateQuiz, addXp } from "@/lib/api";
 import { CodeEditor } from "@/components/code-editor";
@@ -174,7 +174,7 @@ export default function Home() {
       setSelectedModuleId(nextModule?.module_id ?? null);
       setChatMessages([]);
     } catch (error) {
-      alert("Failed to connect to the backend. Please ensure the Python server is running on port 8000 (see README).");
+      alert("Failed to perform action.");
     }
   }
 
@@ -202,18 +202,18 @@ export default function Home() {
       setSelectedModuleId(null);
       setChatMessages([]);
     } catch (error) {
-      alert("Failed to connect to the backend. Please ensure the Python server is running on port 8000.");
+      alert("Failed to perform action.");
     }
   }
 
-  async function toggleMaterial(materialId: number, completed: boolean) {
+  async function toggleMaterial(material: any, completed: boolean) {
     if (!plan) return;
     try {
-      await updateMaterialProgress({ user_id: plan.user_id, material_id: materialId, completed });
+      await updateMaterialProgress({ user_id: plan.user_id, material_id: material.id, title: material.title, completed });
       const progressResult = await getProgress(plan.user_id);
       setPlan({ ...plan, schedule: progressResult.schedule });
     } catch (error) {
-      alert("Failed to connect to the backend. Please ensure the Python server is running on port 8000.");
+      alert("Failed to connect to the backend.");
     }
   }
 
@@ -286,8 +286,20 @@ export default function Home() {
         setTimeout(() => setShowLevelUp(false), 3000);
       }
     } catch (error) {
-      alert("Failed to connect to the backend. Please ensure the Python server is running on port 8000.");
+      alert("Failed to execute. Check your network or API keys.");
     }
+  }
+
+  function speakText(text: string) {
+    if (!("speechSynthesis" in window)) {
+      alert("Your browser does not support text-to-speech.");
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
   }
 
   async function sendTutorMessage() {
@@ -479,7 +491,7 @@ export default function Home() {
                                 <input 
                                   type="checkbox" 
                                   checked={material.is_completed ?? false} 
-                                  onChange={(e) => toggleMaterial(material.id, e.target.checked)}
+                                  onChange={(e) => toggleMaterial(material, e.target.checked)}
                                   className="h-4 w-4 rounded border-gray-300 text-primary"
                                 />
                                 <span>
@@ -662,8 +674,19 @@ export default function Home() {
                 <p className="text-xs text-muted-foreground">Ask for a hint about the selected module.</p>
               ) : (
                 chatMessages.map((message, index) => (
-                  <div key={`${message.role}-${index}`} className="text-sm">
-                    <p className="text-xs font-semibold text-primary mb-1">{message.role === "learner" ? "You" : "Tutor"}</p>
+                  <div key={`${message.role}-${index}`} className="text-sm group relative">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-semibold text-primary">{message.role === "learner" ? "You" : "Tutor"}</p>
+                      {message.role === "tutor" && message.text !== "..." && (
+                        <button 
+                          onClick={() => speakText(message.text)} 
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary"
+                          title="Read aloud"
+                        >
+                          <Volume2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
                     <p className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed">{message.text}</p>
                   </div>
                 ))
