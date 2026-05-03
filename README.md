@@ -17,6 +17,7 @@ This project runs entirely in your browser or phone. You do not need to publish 
 
 ## Project Links
 
+- Live Web App: https://dsstudyplanner.vercel.app/
 - GitHub repo: https://github.com/abhaypatial/Studyplanner
 - Gemini API key page: https://aistudio.google.com/app/apikey
 
