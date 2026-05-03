@@ -22,7 +22,7 @@ export async function submitPlan(payload: any) {
       status: index === 0 ? 'active' : 'pending',
       due_date: new Date(Date.now() + (index + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       weekly_hours: 10,
-      priority: mod.priority || 'high',
+      priority: (mod as any).priority || 'high',
       est_hours: mod.est_hours,
       summary: mod.summary,
       materials: mats.map(m => ({ ...m, id: Math.random(), is_completed: false }))

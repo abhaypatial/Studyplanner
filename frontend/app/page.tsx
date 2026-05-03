@@ -169,8 +169,8 @@ export default function Home() {
         target_months: months,
         skills: selectedSkills.map((name) => ({ name })),
       });
-      setPlan(result);
-      const nextModule = result.schedule.find((item: PlanItem) => item.status !== "done") ?? result.schedule[0];
+      setPlan(result as Plan);
+      const nextModule = result.schedule.find((item: any) => item.status !== "done") ?? result.schedule[0];
       setSelectedModuleId(nextModule?.module_id ?? null);
       setChatMessages([]);
     } catch (error) {
@@ -183,8 +183,8 @@ export default function Home() {
     try {
       await updateProgress({ user_id: plan.user_id, module_id: moduleId, status: "done" });
       const progressResult = await getProgress(plan.user_id);
-      setPlan({ ...plan, schedule: progressResult.schedule, xp: progressResult.xp, streak_days: progressResult.streak_days });
-      const nextModule = progressResult.schedule.find((item: PlanItem) => item.status !== "done") ?? progressResult.schedule[0];
+      setPlan({ ...plan, schedule: progressResult.schedule, xp: progressResult.xp, streak_days: progressResult.streak_days } as Plan);
+      const nextModule = progressResult.schedule.find((item: any) => item.status !== "done") ?? progressResult.schedule[0];
       setSelectedModuleId(nextModule?.module_id ?? moduleId);
       
       setShowLevelUp(true);
@@ -211,7 +211,7 @@ export default function Home() {
     try {
       await updateMaterialProgress({ user_id: plan.user_id, material_id: material.id, title: material.title, completed });
       const progressResult = await getProgress(plan.user_id);
-      setPlan({ ...plan, schedule: progressResult.schedule });
+      setPlan({ ...plan, schedule: progressResult.schedule } as Plan);
     } catch (error) {
       alert("Failed to connect to the backend.");
     }
@@ -274,14 +274,14 @@ export default function Home() {
 
   async function execute() {
     try {
-      const result = await runCode(language, code);
+      const result = await runCode(language, code) as any;
       const out = result.stdout || result.stderr || JSON.stringify(result.rows ?? [], null, 2);
       setOutput(out);
       
       if (plan && language === "python" && out.includes("Data Science Rules!")) {
         await addXp({ user_id: plan.user_id, amount: 10 });
         const progressResult = await getProgress(plan.user_id);
-        setPlan({ ...plan, xp: progressResult.xp, streak_days: progressResult.streak_days });
+        setPlan({ ...plan, xp: progressResult.xp, streak_days: progressResult.streak_days } as Plan);
         setShowLevelUp(true);
         setTimeout(() => setShowLevelUp(false), 3000);
       }
@@ -335,11 +335,13 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-primary/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-500/10 rounded-full blur-3xl pointer-events-none animate-float" />
+    <main className="min-h-screen relative pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-500/10 rounded-full blur-3xl animate-float" />
+      </div>
       
-      <header className="sticky top-0 z-50 glass-effect border-b border-white/10 shadow-sm">
+      <header className="sticky top-0 z-50 glass-effect border-b border-white/10 shadow-sm pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 shadow-[0_0_15px_rgba(var(--primary),0.5)]">
@@ -445,7 +447,7 @@ export default function Home() {
                   {plan ? `${plan.weekly_hours} weekly hours recommended` : "Generate a plan to calculate deadlines."}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 {plan && (
                   <div className="mr-2 flex items-center gap-3 font-medium">
                     <div className="flex items-center gap-1 text-orange-500"><Flame className="h-4 w-4" /> {plan.streak_days} Day Streak</div>
@@ -512,7 +514,7 @@ export default function Home() {
                         <Progress value={item.status === "done" ? 100 : item.status === "active" ? 50 : 0} className="h-2.5 rounded-full" />
                       </div>
                       <Button
-                        variant={item.status === "done" ? "secondary" : "default"}
+                        variant={item.status === "done" ? "outline" : "default"}
                         size="sm"
                         className={item.status === "done" ? "bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20" : "bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 shadow-md font-semibold text-white"}
                         onClick={() => startQuiz(item)}
@@ -534,13 +536,13 @@ export default function Home() {
                 <h2 className="text-base font-semibold">Sandbox</h2>
                 <p className="text-xs text-muted-foreground mt-1">Hint: Print "Data Science Rules!" in Python for extra XP!</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button variant={language === "python" ? "default" : "outline"} size="sm" onClick={() => setLanguage("python")}>Python</Button>
                 <Button variant={language === "sql" ? "default" : "outline"} size="sm" onClick={() => setLanguage("sql")}>SQL</Button>
               </div>
             </div>
             <CodeEditor language={language} value={code} onChange={setCode} />
-            <div className="mt-3 flex items-center justify-between gap-3">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <Button onClick={execute}>
                 <Play className="mr-2 h-4 w-4" />
                 Run

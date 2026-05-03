@@ -37,7 +37,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-6 py-8">
+    <main className="mx-auto min-h-screen max-w-3xl px-6 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))]">
       <Card className="p-6 shadow-xl border-t-4 border-t-primary bg-background/50 backdrop-blur animate-fade-in">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">Gemini Tutor Settings</h1>
         <p className="mt-2 text-sm text-muted-foreground">Configure your Google Gemini API key to power the AI Tutor. Your key is stored locally in your browser and never on our servers.</p>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
             />
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button onClick={loadModels} variant="secondary" className="transition-all hover:scale-105 active:scale-95">Fetch Models</Button>
+            <Button onClick={loadModels} variant="outline" className="transition-all hover:scale-105 active:scale-95">Fetch Models</Button>
             <Button onClick={saveSettings} className="transition-all hover:scale-105 active:scale-95 bg-primary text-primary-foreground shadow-[0_0_15px_rgba(var(--primary),0.5)]">Save & Return</Button>
           </div>
         </div>
